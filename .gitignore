@@ -1,0 +1,113 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# QA AI Automation Framework — .gitignore
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── SECURITY: Never commit real API keys ─────────────────────────────────────
+# Use config/config.example.json as the template.
+# Copy it to config/config.json and fill in your keys locally.
+config/config.json
+
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+var/
+sdist/
+develop-eggs/
+.installed.cfg
+lib/
+lib64/
+
+# ── Virtual environments ──────────────────────────────────────────────────────
+venv/
+.venv/
+env/
+.env/
+ENV/
+.virtualenv/
+
+# ── pytest ────────────────────────────────────────────────────────────────────
+.pytest_cache/
+.cache/
+*.pytest_cache
+
+# ── Allure results (generated — do not commit raw results) ───────────────────
+testReport/Execution_Backup/report/allure-results/
+testReport/Execution_Backup/report/allure-report/
+testReport/Execution_Backup/report/ai_dashboard_report.html
+testReport/Execution_Backup/report/pytest_html_report.html
+testReport/Execution_Backup/archive/
+testReport/Execution_Backup/backup/
+
+# ── Test artifacts (screenshots, videos, traces) ─────────────────────────────
+testReport/UI_Screenshots/
+testReport/Videos/
+testReport/Traces/
+
+# ── Stray root-level report files (should never be committed) ────────────────
+/output.json
+/pytest_html_report.html
+/archive/
+
+# ── AI pipeline state (auto-generated Excel files) ───────────────────────────
+# These are regenerated on each pipeline run.
+# Commit them only if you want to share cached agent outputs.
+ai_orchestrator/pipeline_state/pipeline_state.xlsx
+ai_orchestrator/pipeline_state/rtm_store.xlsx
+
+# ── Browser session state ─────────────────────────────────────────────────────
+# storageState.json contains browser cookies and localStorage — do not commit.
+# The broader pattern covers any variant filename inside the storageState/ folder.
+storageState/*.json
+storageState/storageState.json
+
+# ── IDE / Editor ──────────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ── Logs ──────────────────────────────────────────────────────────────────────
+*.log
+logs/
+
+# ── Coverage ──────────────────────────────────────────────────────────────────
+.coverage
+htmlcov/
+coverage.xml
+*.cover
+
+# ── mypy / type checkers ──────────────────────────────────────────────────────
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pytype/
+
+# ── Jupyter ───────────────────────────────────────────────────────────────────
+.ipynb_checkpoints/
+
+# ── OS ────────────────────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ── Documentation (internal — only README.md is committed to git) ────────────
+# All detailed docs live in docs/ and are for local reference only.
+# README.md at the root is the only doc committed to the repository.
+docs/

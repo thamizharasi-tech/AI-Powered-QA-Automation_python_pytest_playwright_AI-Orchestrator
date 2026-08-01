@@ -1,0 +1,60 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# .dockerignore — QA AI Automation Framework
+# ─────────────────────────────────────────────────────────────────────────────
+# Excludes generated artifacts, caches, IDE files, and sensitive files from
+# the Docker build context.  Without this file, COPY . . sends 800+ files
+# (including 651 generated report files) to the Docker daemon on every build.
+#
+# Files excluded here are NOT copied into the image by COPY . .
+# They can still be mounted at runtime via -v ${PWD}/testReport:/app/testReport
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Generated test artifacts ──────────────────────────────────────────────────
+# These are produced at runtime and mounted via Docker volumes.
+# Never bake test results, screenshots, videos, or traces into the image.
+testReport/
+storageState/
+archive/
+
+# ── AI pipeline state (auto-generated Excel files) ───────────────────────────
+# Regenerated on each pipeline run — mount via volume if persistence is needed.
+ai_orchestrator/pipeline_state/
+
+# ── Python caches ─────────────────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# ── Virtual environments ──────────────────────────────────────────────────────
+venv/
+.venv/
+env/
+.env/
+
+# ── IDE / Editor ──────────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# ── Git ───────────────────────────────────────────────────────────────────────
+.git/
+.gitignore
+
+# ── Sensitive files ───────────────────────────────────────────────────────────
+# config/config.json contains LLM API keys — never bake into image.
+# Pass config at runtime: -v ${PWD}/config/config.json:/app/config/config.json:ro
+config/config.json
+
+# ── Generated reports committed to root ──────────────────────────────────────
+Test Results_complete_ai_agent - .html
+
+# ── Utility / debug scripts ───────────────────────────────────────────────────
+_check_env_strip.py
+_force_regen_scripts.py
+
+# ── Ghost test directory ──────────────────────────────────────────────────────
+# test/ contains only stub tests (assert True) — not needed in image.
+test/

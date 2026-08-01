@@ -1,0 +1,22 @@
+[
+  {
+    "name": "Assertion Failures",
+    "matchedStatuses": ["failed"],
+    "messageRegex": "AssertionError|assert .*|expected.*actual|expected.*but.*was"
+  },
+  {
+    "name": "Timeout / Element Not Found",
+    "matchedStatuses": ["failed"],
+    "messageRegex": "timeout|timed out|element .* not found|NoSuchElement|stale element reference|waiting for"
+  },
+  {
+    "name": "Environment / Setup Failures",
+    "matchedStatuses": ["failed"],
+    "messageRegex": "environment|setup|fixture|configuration|Cannot find|failed to start"
+  },
+  {
+    "name": "Other Failures",
+    "matchedStatuses": ["failed"],
+    "messageRegex": ".*"
+  }
+]

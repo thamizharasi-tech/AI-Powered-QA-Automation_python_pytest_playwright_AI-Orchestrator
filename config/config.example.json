@@ -1,0 +1,16 @@
+{
+  "_comment": "Copy this file to config.json. NEVER commit config.json.",
+
+  "_provider_note": "Set 'provider' to the name of your LLM. Currently registered: 'ollama'. To add a new provider see docs/HOW_TO_ADD_PROVIDER.md",
+
+  "provider": "ollama",
+
+  "ollama": {
+    "_comment": "Ollama — local LLM server. Install from https://ollama.ai then run: ollama pull llama3",
+    "base_url":    "http://localhost:11434",
+    "model":       "llama3",
+    "temperature": 0.3,
+    "max_tokens":  8192,
+    "timeout":     120
+  }
+}
