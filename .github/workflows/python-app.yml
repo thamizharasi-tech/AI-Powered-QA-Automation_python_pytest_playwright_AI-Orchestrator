@@ -6,47 +6,96 @@ on:
   pull_request:
     branches: [ main ]
 
+# Cancel superseded runs on the same branch
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  build:
+  # ───────────────────────────────────────────────────────────────────────────
+  # Job 1: Smoke gate — fast, must pass. No LLM config, no live app needed.
+  # ───────────────────────────────────────────────────────────────────────────
+  smoke:
+    name: Smoke tests (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        python-version: [3.11]
+        python-version: ['3.11']
+
+    env:
+      # Container/CI overrides: msedge is unavailable on Linux, always headless
+      E2E_BROWSER: chromium
+      E2E_HEADLESS: 'true'
+      PYTHONIOENCODING: utf-8
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: requirements.txt
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Install Playwright browsers
-        run: python -m playwright install --with-deps
+      # Only chromium is needed; --with-deps installs the OS libraries.
+      - name: Install Playwright browser (chromium)
+        run: python -m playwright install --with-deps chromium
 
-      - name: Create repo local test directories
+      - name: Create local test directories
         run: |
           mkdir -p testData
-          mkdir -p testReport/Execution_Backup/report
+          mkdir -p testReport/Execution_Backup/report/allure-results
           mkdir -p testReport/UI_Screenshots
           mkdir -p testReport/Videos
           mkdir -p testReport/Traces
           mkdir -p storageState
+          mkdir -p ai_orchestrator/pipeline_state
 
-      - name: Build Docker image
-        run: docker build -t qa-ai-automation .
+      - name: Run smoke tests
+        run: pytest -m smoke tests/test_ci_smoke.py --maxfail=1 --disable-warnings -q
 
-      - name: Run smoke test
-        run: pytest --maxfail=1 --disable-warnings -q tests/test_ci_smoke.py
-
-      - name: Upload pytest report
+      - name: Upload pytest HTML report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: pytest-report
-          path: '**/pytest_html_report.html'
+          name: pytest-report-${{ matrix.python-version }}
+          path: testReport/Execution_Backup/report/pytest_html_report.html
+          if-no-files-found: ignore
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # Job 2: Docker image build — verifies the Dockerfile still builds.
+  # Runs only after smoke passes, and only on pushes to main.
+  # ───────────────────────────────────────────────────────────────────────────
+  docker:
+    name: Docker image build
+    needs: smoke
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Free up disk space
+        run: |
+          sudo rm -rf /usr/local/lib/android /opt/ghc /usr/share/dotnet
+          df -h
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build image (no push)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          load: false
+          tags: qa-ai-automation:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

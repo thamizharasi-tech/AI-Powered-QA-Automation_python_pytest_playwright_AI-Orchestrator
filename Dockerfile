@@ -27,14 +27,9 @@
 #   docker run --rm -e FORCE_RERUN=1 ... qa-ai-automation
 # ─────────────────────────────────────────────────────────────────────────────
 
-# Pinned to v1.49.0-jammy to match playwright==1.49.0 in requirements-lock.txt.
+# Pinned to v1.49.0-jammy to match playwright==1.49.0 in requirements.txt.
 # Python 3.10.12 / Ubuntu 22.04 (Jammy LTS).
-# Update this tag when upgrading playwright in requirements.txt, then regenerate
-# requirements-lock.txt:
-#   docker build -t qa-ai-automation .
-#   docker run --rm qa-ai-automation pip list --format=freeze \
-#     | grep -v "^pip=\|^setuptools=\|^wheel=\|^virtualenv=\|^distlib=\|^filelock=\|^platformdirs=" \
-#     > requirements-lock.txt
+# Update this tag whenever the playwright version in requirements.txt changes.
 FROM mcr.microsoft.com/playwright/python:v1.49.0-jammy
 
 # ── Environment ───────────────────────────────────────────────────────────────
@@ -62,16 +57,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /app
 
 # ── Python dependencies ───────────────────────────────────────────────────────
-# requirements.txt      — human-readable source of truth for direct dependencies
-# requirements-lock.txt — full lock file (direct + transitive) for reproducible builds
-#
-# Docker installs from requirements-lock.txt to ensure every build uses the
-# exact same package versions.  requirements.txt is copied alongside it so
-# developers can see which packages are direct dependencies.
-#
-# Layer-caching: both files are copied before COPY . . so the pip install
-# layer is only invalidated when a dependency file changes.
-COPY requirements.txt  ./
+# requirements.txt holds pinned direct dependencies (single source of truth).
+# Copied before COPY . . so the pip layer is cached until dependencies change.
+COPY requirements.txt ./
 RUN python -m pip install --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 

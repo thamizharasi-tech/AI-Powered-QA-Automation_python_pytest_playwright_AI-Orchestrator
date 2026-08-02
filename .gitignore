@@ -53,10 +53,12 @@ testReport/UI_Screenshots/
 testReport/Videos/
 testReport/Traces/
 
-# ── Stray root-level report files (should never be committed) ────────────────
+# ── Stray report files (should never be committed) ────────────────────────────
 /output.json
 /pytest_html_report.html
 /archive/
+tests/output.json
+tests/pytest_html_report.html
 
 # ── AI pipeline state (auto-generated Excel files) ───────────────────────────
 # These are regenerated on each pipeline run.
