@@ -71,9 +71,9 @@ WORKDIR /app
 #
 # Layer-caching: both files are copied before COPY . . so the pip install
 # layer is only invalidated when a dependency file changes.
-COPY requirements.txt requirements-lock.txt ./
+COPY requirements.txt  ./
 RUN python -m pip install --upgrade pip && \
-    pip install --no-cache-dir -r requirements-lock.txt
+    pip install --no-cache-dir -r requirements.txt
 
 # ── Playwright browsers ───────────────────────────────────────────────────────
 # Explicitly install Chromium (default browser in container).
